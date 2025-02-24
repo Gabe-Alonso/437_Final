@@ -1,0 +1,31 @@
+:root {
+    --background-color: white;
+    --text-color: white;
+    --anti-text-color: black;
+    --heading-color: black;
+    --link-color: white;
+    --link-header-visted: white;
+    --background-color-review: rgb(229,229,229);
+
+}
+
+body.dark-mode {
+    --heading-color: rgb(144, 177, 223);
+    --background-color: rgb(51, 47, 39);
+    --text-color: white;
+    --anti-text-color: white;
+    --link-color: #ffa576;
+    --link-header-visted: rgb(227, 234, 255);
+    --background-color-review: rgb(164, 164, 164);
+}
+
+.maintext{
+    color: var(--text-color);
+}
+
+.antitext{
+    color: var(--anti-text-color);
+}
+.reviewbackground{
+    background-color: var(--background-color-review);
+}
