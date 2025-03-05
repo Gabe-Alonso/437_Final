@@ -27,6 +27,11 @@ h2 {
     color: var(--heading-color);
 }
 
+.modal {
+    background-color: var(--background-color);
+    color: var(--anti-text-color);
+}
+
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;

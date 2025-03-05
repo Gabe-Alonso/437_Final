@@ -243,7 +243,7 @@ function Modal(props) {
         return (
             <div className="bg-black/20 w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center"
             onClick={backgroundClose}>
-                <div ref={inputRef} className="bg-white p-4 flex flex-col gap-4">
+                <div ref={inputRef} className="modal p-4 flex flex-col gap-4">
                     <header className="flex flex-row justify-between w-full">
                         <h1 className="whitespace-nowrap">{props.headerLabel}</h1>
                         <button className="ml-4 flex-shrink-0" aria-label="CloseS"
