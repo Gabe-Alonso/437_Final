@@ -1,4 +1,4 @@
-export function Spinner({className}) {
+export function Spinner({className}: {className: string}) {
     const defaultClasses = "mr-3 -ml-1 size-5 animate-spin ";
     // If className is undefined, don't want to append the string "undefined", but rather just an empty string
     const additionalClasses = className || "";

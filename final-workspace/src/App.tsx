@@ -1,9 +1,18 @@
 
 import {Route, Routes} from "react-router";
-import {MainPage} from "./MainPage.jsx";
-import {Account} from "./Account.jsx";
+import {MainPage} from "./MainPage.js";
+import {Account} from "./Account.tsx";
 
-function App(props) {
+
+interface review {
+    id: string; album: string; artist: string; rating: string; review: string; completed: boolean;
+}
+
+interface AppProps {
+    reviews: review[];
+}
+
+function App(props: AppProps): JSX.Element {
 
     function darkToggle(){
         if(document.body.classList.contains('dark-mode')){

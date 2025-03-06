@@ -2,7 +2,11 @@ import React from "react";
 import "./tokens.css";
 import "./index.css";
 
-export function Account(props){
+interface AccountProps {
+    darkToggle: () => void;
+}
+
+export function Account(props: AccountProps): JSX.Element {
     return(
         <div>
             <AccountHeader darkToggle={props.darkToggle}></AccountHeader>
@@ -12,7 +16,7 @@ export function Account(props){
     )
 }
 
-function AccountHeader(props){
+function AccountHeader(props: AccountProps){
     return (<div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
         <a href="/" className="maintext text-4xl w-full text-left ml-6 self-center bg-blue-500 rounded-2xl p-1 fill">Main</a>
         <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
@@ -21,7 +25,7 @@ function AccountHeader(props){
     </div>);
 }
 
-function Spacer(props) {
+function Spacer() {
     return (
         <div className="bg-black/0 min-h-20 top-0 left-0">
 
@@ -29,7 +33,7 @@ function Spacer(props) {
     )
 }
 
-function AccountDetails(props) {
+function AccountDetails() {
     const [username, setUsername] = React.useState('username');
 
 

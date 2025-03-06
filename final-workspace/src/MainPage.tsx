@@ -1,20 +1,25 @@
 import React, { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { nanoid } from "nanoid";
-import {GroceryPanel} from "./GroceryPanel.jsx";
 import { useRef } from 'react';
-import {Spinner} from "./assets/Spinner.jsx";
-import {Route, Routes} from "react-router";
-import {Spacer} from "./Spacer.jsx";
+import {Spinner} from "./assets/Spinner.js";
+import {Spacer} from "./Spacer.tsx";
 import "./tokens.css";
 import "./index.css";
 
 
-export function MainPage(props) {
+interface review {
+    id: string; album: string; artist: string; rating: string; review: string; completed: boolean;
+}
+
+interface MainPageProps {
+    reviews: review[];
+    darkToggle: () => void;
+}
+
+export function MainPage(props: MainPageProps) {
     const [reviews, setReviews] = React.useState(props.reviews);
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -28,14 +33,12 @@ export function MainPage(props) {
             artist={review.artist}
             rating={review.rating}
             review={review.review}
-            completed={review.completed}
             key={review.id}
-            onCheckbox={() => toggleTaskCompleted(review.id)}
             onDelete={() => deleteReview(review.id)}
         />
     )));
     function addReview(album="Album", artist = "Artist", rating = "0", review = "Review") {
-        fetchData("").then(async (res) => {
+        fetchData().then(async (res) => {
             const newReview = { id: `todo-${nanoid()}`, album: album, artist: artist, rating: rating, review: review, completed: false };
             console.log("Adding new review");
             //console.log(reviews);
@@ -44,11 +47,11 @@ export function MainPage(props) {
 
     }
 
-    function delayMs(ms) {
+    function delayMs(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async function fetchData(url) {
+    async function fetchData() {
         setIsLoading(true);
         console.log("Loading...");
 
@@ -69,21 +72,8 @@ export function MainPage(props) {
         setIsOpen(newModalStatus);
     }
 
-    function toggleTaskCompleted(id) {
 
-        const updatedReviews = reviews.map((review) => {
-            // if this review has the same ID as the edited review
-            if (id === review.id) {
-                // use object spread to make a new object
-                // whose `completed` prop has been inverted
-                //console.log("Updated review " + review.name);
-                return { ...review, completed: !review.completed };
-            }
-            return review;
-        });
-        setReviews(updatedReviews);
-    }
-    function deleteReview(id) {
+    function deleteReview(id: string) {
         const updatedTasks = reviews.map((review) => {
             // if this review has the same ID as the edited review
             if (id === review.id) {
@@ -108,7 +98,8 @@ export function MainPage(props) {
                 openModal={isOpen}
                 closeModal={onCloseRequested}
             >
-                <AddReviewForm onNewReview={addReview} isLoading={isLoading} />
+                <AddReviewForm onNewReview={addReview} isLoading={isLoading} id={''} artist={''} album={''} review={''}
+                               rating={"0"} />
             </Modal>
 
 
@@ -127,7 +118,16 @@ export function MainPage(props) {
 
 }
 
-function AlbumReview(props) {
+interface AlbumReviewProps {
+    id: string;
+    artist: string;
+    album: string;
+    review: string;
+    rating: string;
+    onDelete: () => void;
+}
+
+function AlbumReview(props: AlbumReviewProps) {
     return (
         <li className="">
             {/*<input id={props.id} type="checkbox" onChange={props.onCheckbox} defaultChecked={props.completed}/>*/}
@@ -157,19 +157,26 @@ function AlbumReview(props) {
     );
 }
 
+interface HeaderProps {
+    darkToggle: () => void;
+}
 
-
-function Header(props) {
+function Header(props: HeaderProps) {
     return (
         <div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
             <button onClick={props.darkToggle} className="w-full maintext">Dark Mode</button>
             <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
-            <a href="/account" className="maintext text-4xl w-full text-right mr-6 self-center">Account</a>
+            <a href="/Account" className="maintext text-4xl w-full text-right mr-6 self-center">Account</a>
         </div>
     )
 }
 
-function Footer(props) {
+interface FooterProps {
+    onCloseRequested: () => void;
+    children?: React.ReactNode;
+}
+
+function Footer(props: FooterProps) {
     return (
         <div className="bg-black min-h-20 fixed bottom-0 left-0 w-screen flex justify-center">
             <button
@@ -183,8 +190,17 @@ function Footer(props) {
     )
 }
 
+interface AddReviewProps {
+    id: string;
+    artist: string;
+    album: string;
+    review: string;
+    rating: string;
+    onNewReview: (albumName: string, artistName: string, rating: string, review: string) => void;
+    isLoading: boolean;
+}
 
-function AddReviewForm(props) {
+function AddReviewForm(props: AddReviewProps): JSX.Element {
     const [albumName, setAlbumName] = React.useState('Album');
     const [artistName, setArtistName] = React.useState('Artist');
     const [rating, setRating] = React.useState('0');
@@ -218,7 +234,7 @@ function AddReviewForm(props) {
                     props.onNewReview(albumName, artistName, rating, review);
                     setAlbumName('Album');
                     setReview('Artist');
-                    setRating(0);
+                    setRating("0");
                     setReview('Review');
                 }}
             >
@@ -229,32 +245,46 @@ function AddReviewForm(props) {
     );
 }
 
-function Modal(props) {
-    //console.log("Should we see the modal rn? " + props.openModal);
-    const inputRef = useRef(null);
 
-    function backgroundClose(e){
-        if(!inputRef.current.contains(e.target)){
+
+interface ModalProps {
+    closeModal: () => void;
+    openModal: boolean;
+    headerLabel: string;
+    children?: React.ReactNode;
+}
+
+function Modal(props: ModalProps) {
+    const inputRef = useRef<HTMLDivElement>(null);
+
+    function backgroundClose(e: React.MouseEvent<HTMLDivElement>) {
+        if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
             props.closeModal();
         }
     }
 
-    if(props.openModal){
+    if (props.openModal) {
         return (
-            <div className="bg-black/20 w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center"
-            onClick={backgroundClose}>
+            <div
+                className="bg-black/20 w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center"
+                onClick={backgroundClose}
+            >
                 <div ref={inputRef} className="modal p-4 flex flex-col gap-4">
                     <header className="flex flex-row justify-between w-full">
                         <h1 className="whitespace-nowrap">{props.headerLabel}</h1>
-                        <button className="ml-4 flex-shrink-0" aria-label="CloseS"
-                        onClick={props.closeModal}>X</button>
+                        <button
+                            className="ml-4 flex-shrink-0"
+                            aria-label="Close"
+                            onClick={props.closeModal}
+                        >
+                            X
+                        </button>
                     </header>
                     {props.children}
                 </div>
             </div>
         );
-    }
-    else{
+    } else {
         return null;
     }
 }
