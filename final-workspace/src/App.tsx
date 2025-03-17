@@ -5,7 +5,7 @@ import {Account} from "./Account.tsx";
 
 
 interface review {
-    id: string; album: string; artist: string; rating: string; review: string; completed: boolean;
+    id: string; album: string; artist: string; rating: string; review: string;
 }
 
 interface AppProps {

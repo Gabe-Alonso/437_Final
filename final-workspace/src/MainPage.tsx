@@ -11,7 +11,7 @@ import "./index.css";
 
 
 interface review {
-    id: string; album: string; artist: string; rating: string; review: string; completed: boolean;
+    id: string; album: string; artist: string; rating: string; review: string;
 }
 
 interface MainPageProps {
