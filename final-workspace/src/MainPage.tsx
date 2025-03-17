@@ -9,6 +9,8 @@ import {Spacer} from "./Spacer.tsx";
 import "./tokens.css";
 import "./index.css";
 import {Link} from "react-router";
+import {postNewReview} from "./postNewReview.ts";
+import {useReviewFetching} from "./useReviewFetching.ts";
 
 
 interface review {
@@ -19,17 +21,23 @@ interface MainPageProps {
     reviews: review[];
     darkToggle: () => void;
     isLoading: boolean;
+    authToken: string;
 }
 
 export function MainPage(props: MainPageProps) {
     const [reviews, setReviews] = React.useState(props.reviews);
+
     const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     //console.log("Immediate variable is " + isOpen);
 
-    console.log("reviews in mainPage", props.reviews);
+    React.useEffect(() => {
+        fetchData(props.authToken);
+    }, [props.authToken]); // Runs when the component mounts or authToken changes
 
-    const reviewList = (props.reviews?.map((review) => (
+    console.log("reviews in mainPage", reviews);
+
+    const reviewList = reviews?.map((review) => (
         <AlbumReview
             id={review._id}
             album={review.album}
@@ -39,40 +47,57 @@ export function MainPage(props: MainPageProps) {
             key={review._id}
             onDelete={() => deleteReview(review._id)}
         />
-    )));
+    ));
 
-    function addReview(album="Album", artist = "Artist", rating = "0", review = "Review", author = "Author") {
+    function addReview(album = "Album", artist = "Artist", rating = "0", review = "Review", author = "Author") {
+        const newReview = { _id: nanoid(), album, artist, rating, review, author };
 
-        // PUT POST IN HERE
-
-        fetchData().then(async (res) => {
-            const newReview = { _id: `todo-${nanoid()}`, album: album, artist: artist, rating: rating, review: review, author: author };
-            console.log("Adding new review");
-            //console.log(reviews);
-            setReviews([...reviews, newReview]);
-            });
-
+        postNewReview(props.authToken, newReview).then(() => {
+            // Instead of refetching, optimistically update state
+            fetchData(props.authToken);
+            //setReviews((prevReviews) => [...prevReviews, newReview]);
+        });
     }
+
+
 
     function delayMs(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async function fetchData() {
+    async function fetchData(authToken?: string) {
         setIsLoading(true);
         console.log("Loading...");
 
-        delayMs(2000).then(async () => {
-            try {
-            } catch (error) {
+        try {
+            if (authToken) {
+                const response = await fetch("/api/reviews", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`
+                    }
+                });
 
-            } finally {
-                setIsLoading(false);
-                console.log("Done Loading");
-                setIsOpen(false);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch reviews");
+                }
+
+                const fetchedReviews = await response.json();
+                console.log("Fetched Reviews:", fetchedReviews);
+
+                // Store the fetched reviews as raw objects in state
+                setReviews(fetchedReviews);
             }
-        });
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        } finally {
+            setIsLoading(false);
+            console.log("Done Loading");
+            setIsOpen(false);
+        }
     }
+
 
     function onCloseRequested() {
         const newModalStatus = !isOpen;

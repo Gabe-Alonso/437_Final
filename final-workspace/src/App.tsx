@@ -43,7 +43,7 @@ function App(props: AppProps): JSX.Element {
 
     return (
         <Routes>
-            <Route path="/" element={<MainPage darkToggle={darkToggle} reviews={fetchedReviews} isLoading={isLoading} />} />
+            <Route path="/" element={<MainPage authToken={authToken} darkToggle={darkToggle} reviews={fetchedReviews} isLoading={isLoading} />} />
             <Route path="/account" element={<Account username={username} darkToggle={darkToggle} />} />
             <Route path="/register" element={<RegisterPage setAuthToken={setAuthToken} setUsername={setUsername} />} />
             <Route path="/login" element={<LoginPage setAuthToken={setAuthToken} setUsername={setUsername} />} />
