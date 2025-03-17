@@ -51,3 +51,10 @@ h2 {
     grid-template-columns: 1fr 5fr;
     grid-template-rows: 2rem 2rem 2rem;
 }
+
+.antitext {
+    color: var(--anti-text-color); /* or desired color */
+}
+.antitext:visited {
+    color: var(--anti-text-color); /* or desired color */
+}

@@ -8,15 +8,17 @@ import {Spinner} from "./assets/Spinner.js";
 import {Spacer} from "./Spacer.tsx";
 import "./tokens.css";
 import "./index.css";
+import {Link} from "react-router";
 
 
 interface review {
-    id: string; album: string; artist: string; rating: string; review: string;
+    _id: string; album: string; artist: string; rating: string; review: string; author: string;
 }
 
 interface MainPageProps {
     reviews: review[];
     darkToggle: () => void;
+    isLoading: boolean;
 }
 
 export function MainPage(props: MainPageProps) {
@@ -25,21 +27,26 @@ export function MainPage(props: MainPageProps) {
     const [isLoading, setIsLoading] = React.useState(false);
     //console.log("Immediate variable is " + isOpen);
 
+    console.log("reviews in mainPage", props.reviews);
 
-    const reviewList = (reviews?.map((review) => (
+    const reviewList = (props.reviews?.map((review) => (
         <AlbumReview
-            id={review.id}
+            id={review._id}
             album={review.album}
             artist={review.artist}
             rating={review.rating}
             review={review.review}
-            key={review.id}
-            onDelete={() => deleteReview(review.id)}
+            key={review._id}
+            onDelete={() => deleteReview(review._id)}
         />
     )));
-    function addReview(album="Album", artist = "Artist", rating = "0", review = "Review") {
+
+    function addReview(album="Album", artist = "Artist", rating = "0", review = "Review", author = "Author") {
+
+        // PUT POST IN HERE
+
         fetchData().then(async (res) => {
-            const newReview = { id: `todo-${nanoid()}`, album: album, artist: artist, rating: rating, review: review, completed: false };
+            const newReview = { _id: `todo-${nanoid()}`, album: album, artist: artist, rating: rating, review: review, author: author };
             console.log("Adding new review");
             //console.log(reviews);
             setReviews([...reviews, newReview]);
@@ -76,7 +83,7 @@ export function MainPage(props: MainPageProps) {
     function deleteReview(id: string) {
         const updatedTasks = reviews.map((review) => {
             // if this review has the same ID as the edited review
-            if (id === review.id) {
+            if (id === review._id) {
                 // use object spread to make a new object
                 // whose `completed` prop has been inverted
                 //console.log("kill review " + review.name);
@@ -84,7 +91,7 @@ export function MainPage(props: MainPageProps) {
             }
             return review;
         });
-        setReviews(updatedTasks.filter((review) => review.id !== id));
+        setReviews(updatedTasks.filter((review) => review._id !== id));
     }
     const addFormHeader = "New Review";
     //console.log("Before returning the app, the modal is " + isOpen);
@@ -166,7 +173,7 @@ function Header(props: HeaderProps) {
         <div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
             <button onClick={props.darkToggle} className="w-full maintext">Dark Mode</button>
             <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
-            <a href="/Account" className="maintext text-4xl w-full text-right mr-6 self-center">Account</a>
+            <Link to="/Account" className="maintext text-4xl w-full text-right mr-6 self-center">Account</Link>
         </div>
     )
 }

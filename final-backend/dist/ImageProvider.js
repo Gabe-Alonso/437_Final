@@ -39,6 +39,31 @@ class ImageProvider {
         console.log('Fetched images:', images);
         return images;
     }
+    async createImage(imageId, source, name, author) {
+        const collectionName = process.env.IMAGES_COLLECTION_NAME;
+        if (!collectionName) {
+            throw new Error("Missing collection name from environment variables");
+        }
+        console.log("Using collection:", collectionName);
+        console.log("Potential problem 1");
+        const imagesCollection = this.mongoClient.db().collection(collectionName);
+        console.log("Potential problem 2");
+        // Construct the new image document with ObjectId for _id
+        const newImage = {
+            _id: imageId,
+            src: source,
+            name: name,
+            likes: 0,
+            author: author
+        };
+        console.log("Potential problem 3");
+        // Insert the new image into the database
+        const result = await imagesCollection.insertOne(newImage); // Cast to Document
+        console.log("Potential problem 4");
+        console.log("Insert result:", result);
+        console.log("Potential problem 5");
+        return result.insertedId;
+    }
     async updateImageName(imageId, newName) {
         const collectionName = process.env.IMAGES_COLLECTION_NAME;
         if (!collectionName) {
