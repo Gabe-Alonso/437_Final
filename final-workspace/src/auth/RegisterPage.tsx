@@ -30,11 +30,11 @@ export function RegisterPage(props: { setAuthToken: (arg0: string) => void; setU
     }
 
     return (
-        <div className="body">
+        <section className="body">
             <h1 className="antitext">Register a New Account</h1>
             <UsernamePasswordForm onSubmit={onRegister}></UsernamePasswordForm>
             <p style={{color: "red"}}>{error}</p>
             <Link className="antitext" to="/login">Already have an account? Log in Here</Link>
-        </div>
+        </section>
     );
 }

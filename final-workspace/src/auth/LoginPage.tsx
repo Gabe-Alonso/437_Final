@@ -27,11 +27,11 @@ export function LoginPage(props: { setAuthToken: (arg0: any) => void; setUsernam
     }
 
     return (
-        <div className="body">
+        <section className="body">
             <h1 className="antitext">Login</h1>
             <UsernamePasswordForm onSubmit={onLogin}></UsernamePasswordForm>
             <p style={{color: "red"}}>{error}</p>
             <Link className="antitext" to="/register">Dont have an account? Register Here</Link>
-        </div>
+        </section>
     );
 }

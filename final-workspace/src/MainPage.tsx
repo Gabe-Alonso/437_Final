@@ -146,6 +146,7 @@ export function MainPage(props: MainPageProps) {
             <Header darkToggle={props.darkToggle}></Header>
 
             <Spacer></Spacer>
+            <Spacer></Spacer>
             <Modal
                 headerLabel={addFormHeader}
                 openModal={isOpen}
@@ -191,35 +192,23 @@ function AlbumReview(props: AlbumReviewProps) {
 
     return (
         <li className="mb-4">
-            <div className="flex items-center justify-between">
-                <div onClick={handleClick} className="flex flex-1 cursor-pointer">
-
-                    <div className="flex flex-row p-1 reviewbackground rounded-2xl p-2">
-                        <img src="src/album_placeholder.png" alt="" width="75em" className="rounded-2xl mr-3"/>
-                        <div className="flex flex-col">
-                            <p className="antitext">
-                                {props.artist}
-                            </p>
-                            <p className="antitext">
-                                {props.album}
-                            </p>
-                        </div>
-                        <p className="antitext self-center m-3 ">
-                            {props.rating}
-                        </p>
-                        <p className="antitext self-center m-3 ">
-                            {props.author}
-                        </p>
-                    </div>
-                </div>
-                <button className="ml-2" onClick={props.onDelete}>
-                    <FontAwesomeIcon className="text-gray-500" icon={faTrashCan}/>
+            <article className="flex items-center justify-between" aria-labelledby={`review-${props.id}`}>
+                <button type="button" onClick={handleClick} className="flex flex-1 cursor-pointer text-left focus:outline-none">
+                    <figure className="flex flex-row p-1 reviewbackground rounded-2xl p-2">
+                        <img src="src/album_placeholder.png" alt={`Album cover for ${props.album}`} width="75" className="rounded-2xl mr-3" />
+                        <figcaption className="flex flex-col">
+                            <p id={`review-${props.id}`} className="antitext">{props.artist}</p>
+                            <p className="antitext">{props.album}</p>
+                        </figcaption>
+                        <p className="antitext self-center m-3">{props.rating}</p>
+                        <p className="antitext self-center m-3">{props.author}</p>
+                    </figure>
                 </button>
-            </div>
+                <button type="button" className="ml-2" onClick={props.onDelete} aria-label="Delete review">
+                    <FontAwesomeIcon className="text-gray-500" icon={faTrashCan} />
+                </button>
+            </article>
         </li>
-
-
-
     );
 }
 
@@ -229,11 +218,11 @@ interface HeaderProps {
 
 function Header(props: HeaderProps) {
     return (
-        <div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
+        <header className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
             <button onClick={props.darkToggle} className="w-full maintext">Dark Mode</button>
             <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
             <Link to="/Account" className="maintext text-4xl w-full text-right mr-6 self-center">Account</Link>
-        </div>
+        </header>
     )
 }
 
@@ -244,14 +233,14 @@ interface FooterProps {
 
 function Footer(props: FooterProps) {
     return (
-        <div className="bg-black min-h-20 fixed bottom-0 left-0 w-screen flex justify-center">
+        <footer className="bg-black min-h-20 fixed bottom-0 left-0 w-screen flex justify-center">
             <button
                 className="text-white rounded-md p-1 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={props.onCloseRequested}
             >
                 Add Album Review
             </button>
-        </div>
+        </footer>
 
     )
 }
@@ -271,46 +260,66 @@ function AddReviewForm(props: AddReviewProps): JSX.Element {
     const [artistName, setArtistName] = React.useState('Artist');
     const [rating, setRating] = React.useState('0');
     const [review, setReview] = React.useState('Review');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        props.onNewReview(albumName, artistName, rating, review);
+        setAlbumName('Album');
+        setArtistName('Artist');
+        setRating("0");
+        setReview('Review');
+    };
+
     return (
-        <div>
-            <input type="file" id="imageUpload" name="image" accept="image/*"/>
-            <input
-                className="border rounded-md p-2"
-                value={albumName}
-                onChange={(e) => setAlbumName(e.target.value)}
-            />
-            <input
-                className="border rounded-md p-2"
-                value={artistName}
-                onChange={(e) => setArtistName(e.target.value)}
-            />
-            <input
-                className="border rounded-md p-2"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-            />
-            <input
-                className="border rounded-md p-2"
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-            />
-            <button
-                className="text-white m-2 rounded-md p-1 bg-blue-600"
-                onClick={() => {
-                    props.onNewReview(albumName, artistName, rating, review);
-                    setAlbumName('Album');
-                    setReview('Artist');
-                    setRating("0");
-                    setReview('Review');
-                }}
-            >
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+            <div>
+                <label htmlFor="albumName">Album Name:</label>
+                <input
+                    id="albumName"
+                    type="text"
+                    className="border rounded-md p-2"
+                    value={albumName}
+                    onChange={(e) => setAlbumName(e.target.value)}
+                />
+            </div>
+            <div>
+                <label htmlFor="artistName">Artist Name:</label>
+                <input
+                    id="artistName"
+                    type="text"
+                    className="border rounded-md p-2"
+                    value={artistName}
+                    onChange={(e) => setArtistName(e.target.value)}
+                />
+            </div>
+            <div>
+                <label htmlFor="rating">Rating:</label>
+                <input
+                    id="rating"
+                    type="text"
+                    className="border rounded-md p-2"
+                    value={rating}
+                    onChange={(e) => setRating(e.target.value)}
+                />
+            </div>
+            <div>
+                <label htmlFor="reviewText">Review:</label>
+                <input
+                    id="reviewText"
+                    type="text"
+                    className="border rounded-md p-2"
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                />
+            </div>
+            <button type="submit" className="text-white m-2 rounded-md p-1 bg-blue-600 focus:outline-none">
                 Add review
             </button>
-            {props.isLoading ? <Spinner className="ml-2 mt-2"/> : null}
-        </div>
+            {props.isLoading && <Spinner className="ml-2 mt-2" />}
+        </form>
     );
 }
-
 
 interface ModalProps {
     closeModal: () => void;
@@ -330,7 +339,10 @@ function Modal(props: ModalProps) {
 
     if (props.openModal) {
         return (
-            <div
+            <section
+                role="dialog"
+                aria-labelledby="modal-header"
+                aria-modal="true"
                 className="bg-black/20 w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center"
                 onClick={backgroundClose}
             >
@@ -347,7 +359,7 @@ function Modal(props: ModalProps) {
                     </header>
                     {props.children}
                 </div>
-            </div>
+            </section>
         );
     } else {
         return null;
