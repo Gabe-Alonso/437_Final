@@ -19,13 +19,14 @@ export function Account(props: AccountProps): JSX.Element {
 }
 
 function AccountHeader(props: AccountProps) {
-    return (<div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
-        <Link to="/"
-              className="maintext text-4xl w-full text-left ml-6 self-center bg-blue-500 rounded-2xl p-1 fill">Main</Link>
-        <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
-        <button onClick={props.darkToggle} className="w-full maintext">Dark Mode</button>
+    return (
+        <div className="bg-black min-h-20 fixed top-0 left-0 w-full flex flex-row">
+            <Link to="/"
+                  className="maintext text-4xl w-full text-left ml-6 self-center bg-blue-500 rounded-2xl p-1 fill">Main</Link>
+            <h1 className="maintext text-4xl w-full text-center self-center">Album Tracker</h1>
+            <button onClick={props.darkToggle} className="w-full maintext">Dark Mode</button>
 
-    </div>);
+        </div>);
 }
 
 function Spacer() {

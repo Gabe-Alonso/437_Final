@@ -7,6 +7,7 @@ import {LoginPage} from "./auth/LoginPage.tsx";
 import {SetStateAction, useState} from "react";
 import {useReviewFetching} from "./useReviewFetching.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import {ReviewDetail} from "./ReviewDetailPage.tsx";
 
 
 interface review {
@@ -45,6 +46,7 @@ function App(props: AppProps): JSX.Element {
     return (
         <Routes>
             <Route path="/" element={<ProtectedRoute authToken={authToken}><MainPage authToken={authToken} darkToggle={darkToggle} reviews={fetchedReviews} isLoading={isLoading} /></ProtectedRoute>} />
+            <Route path="/review/:id" element={<ProtectedRoute authToken={authToken}><ReviewDetail /></ProtectedRoute>} />
             <Route path="/account" element={<ProtectedRoute authToken={authToken}><Account username={username} darkToggle={darkToggle} /></ProtectedRoute>} />
             <Route path="/register" element={<RegisterPage setAuthToken={setAuthToken} setUsername={setUsername} />} />
             <Route path="/login" element={<LoginPage setAuthToken={setAuthToken} setUsername={setUsername} />} />

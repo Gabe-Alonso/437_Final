@@ -8,7 +8,7 @@ import {Spinner} from "./assets/Spinner.js";
 import {Spacer} from "./Spacer.tsx";
 import "./tokens.css";
 import "./index.css";
-import {Link} from "react-router";
+import {Link, useNavigate} from "react-router";
 import {postNewReview} from "./postNewReview.ts";
 import {useReviewFetching} from "./useReviewFetching.ts";
 
@@ -182,35 +182,44 @@ interface AlbumReviewProps {
 }
 
 function AlbumReview(props: AlbumReviewProps) {
-    return (
-        <li className="">
-            {/*<input id={props.id} type="checkbox" onChange={props.onCheckbox} defaultChecked={props.completed}/>*/}
-            <label className="todo-label m-0.5" htmlFor={props.id}>
-            </label>
-            <div className="flex flex-row p-1 reviewbackground rounded-2xl p-2">
-                <img src="src/album_placeholder.png" alt="" width="75em" className="rounded-2xl mr-3"/>
-                <div className="flex flex-col">
-                    <p className="antitext">
-                        {props.artist}
-                    </p>
-                    <p className="antitext">
-                        {props.album}
-                    </p>
-                    <p className="antitext overflow-ellipsis">
-                        {props.review}
-                    </p>
-                </div>
-                <p className="antitext self-center m-3 ">
-                    {props.rating}
-                </p>
-                <p className="antitext self-center m-3 ">
-                    {props.author}
-                </p>
-                <button className="" onClick={props.onDelete}><FontAwesomeIcon className={"text-gray-500"}
-                                                                               icon={faTrashCan}/></button>
-            </div>
+    const navigate = useNavigate();
+    const handleClick = () => {
+        // Create a serializable review object, excluding non-serializable props (like functions)
+        const { onDelete, ...reviewData } = props;
+        navigate(`/review/${props.id}`, { state: { review: reviewData } });
+    };
 
+    return (
+        <li className="mb-4">
+            <div className="flex items-center justify-between">
+                <div onClick={handleClick} className="flex flex-1 cursor-pointer">
+
+                    <div className="flex flex-row p-1 reviewbackground rounded-2xl p-2">
+                        <img src="src/album_placeholder.png" alt="" width="75em" className="rounded-2xl mr-3"/>
+                        <div className="flex flex-col">
+                            <p className="antitext">
+                                {props.artist}
+                            </p>
+                            <p className="antitext">
+                                {props.album}
+                            </p>
+                        </div>
+                        <p className="antitext self-center m-3 ">
+                            {props.rating}
+                        </p>
+                        <p className="antitext self-center m-3 ">
+                            {props.author}
+                        </p>
+                    </div>
+                </div>
+                <button className="ml-2" onClick={props.onDelete}>
+                    <FontAwesomeIcon className="text-gray-500" icon={faTrashCan}/>
+                </button>
+            </div>
         </li>
+
+
+
     );
 }
 
