@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import './App.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { nanoid } from "nanoid";
-import { useRef } from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faTrashCan} from '@fortawesome/free-solid-svg-icons'
+import {nanoid} from "nanoid";
+import {useRef} from 'react';
 import {Spinner} from "./assets/Spinner.js";
 import {Spacer} from "./Spacer.tsx";
 import "./tokens.css";
@@ -14,7 +14,12 @@ import {useReviewFetching} from "./useReviewFetching.ts";
 
 
 interface review {
-    _id: string; album: string; artist: string; rating: string; review: string; author: string;
+    _id: string;
+    album: string;
+    artist: string;
+    rating: string;
+    review: string;
+    author: string;
 }
 
 interface MainPageProps {
@@ -44,13 +49,14 @@ export function MainPage(props: MainPageProps) {
             artist={review.artist}
             rating={review.rating}
             review={review.review}
+            author={review.author}
             key={review._id}
             onDelete={() => deleteReview(review._id)}
         />
     ));
 
     function addReview(album = "Album", artist = "Artist", rating = "0", review = "Review", author = "Author") {
-        const newReview = { _id: nanoid(), album, artist, rating, review, author };
+        const newReview = {_id: nanoid(), album, artist, rating, review, author};
 
         postNewReview(props.authToken, newReview).then(() => {
             // Instead of refetching, optimistically update state
@@ -58,7 +64,6 @@ export function MainPage(props: MainPageProps) {
             //setReviews((prevReviews) => [...prevReviews, newReview]);
         });
     }
-
 
 
     function delayMs(ms: number) {
@@ -106,18 +111,34 @@ export function MainPage(props: MainPageProps) {
 
 
     function deleteReview(id: string) {
-        const updatedTasks = reviews.map((review) => {
-            // if this review has the same ID as the edited review
-            if (id === review._id) {
-                // use object spread to make a new object
-                // whose `completed` prop has been inverted
-                //console.log("kill review " + review.name);
-                //return { ...review, completed: !review.completed };
+        // Optimistically update the UI
+        setReviews(prevReviews => prevReviews.filter(review => review._id !== id));
+
+        // Send DELETE request to backend
+        fetch(`/api/reviews/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${props.authToken}` // if you are using auth
             }
-            return review;
-        });
-        setReviews(updatedTasks.filter((review) => review._id !== id));
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to delete review");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Review deleted from backend:", data);
+            })
+            .catch(error => {
+                console.error("Error deleting review:", error);
+                // Optionally revert UI update here if necessary
+            });
     }
+
+
+
     const addFormHeader = "New Review";
     //console.log("Before returning the app, the modal is " + isOpen);
     return (
@@ -131,7 +152,7 @@ export function MainPage(props: MainPageProps) {
                 closeModal={onCloseRequested}
             >
                 <AddReviewForm onNewReview={addReview} isLoading={isLoading} id={''} artist={''} album={''} review={''}
-                               rating={"0"} />
+                               rating={"0"}/>
             </Modal>
 
 
@@ -144,19 +165,20 @@ export function MainPage(props: MainPageProps) {
                 </ul>
             </section>
             <Spacer></Spacer>
-            <Footer onCloseRequested = {onCloseRequested}> </Footer>
+            <Footer onCloseRequested={onCloseRequested}> </Footer>
         </main>
     );
 
 }
 
 interface AlbumReviewProps {
-    id: string;
-    artist: string;
-    album: string;
-    review: string;
-    rating: string;
-    onDelete: () => void;
+    id: string,
+    artist: string,
+    album: string,
+    review: string,
+    rating: string,
+    onDelete: () => void,
+    author: string
 }
 
 function AlbumReview(props: AlbumReviewProps) {
@@ -166,7 +188,7 @@ function AlbumReview(props: AlbumReviewProps) {
             <label className="todo-label m-0.5" htmlFor={props.id}>
             </label>
             <div className="flex flex-row p-1 reviewbackground rounded-2xl p-2">
-                <img src="src/album_placeholder.png" alt="" width="75em" className="rounded-2xl mr-3" />
+                <img src="src/album_placeholder.png" alt="" width="75em" className="rounded-2xl mr-3"/>
                 <div className="flex flex-col">
                     <p className="antitext">
                         {props.artist}
@@ -181,8 +203,11 @@ function AlbumReview(props: AlbumReviewProps) {
                 <p className="antitext self-center m-3 ">
                     {props.rating}
                 </p>
+                <p className="antitext self-center m-3 ">
+                    {props.author}
+                </p>
                 <button className="" onClick={props.onDelete}><FontAwesomeIcon className={"text-gray-500"}
-                                                                                         icon={faTrashCan}/></button>
+                                                                               icon={faTrashCan}/></button>
             </div>
 
         </li>
@@ -276,7 +301,6 @@ function AddReviewForm(props: AddReviewProps): JSX.Element {
         </div>
     );
 }
-
 
 
 interface ModalProps {

@@ -78,5 +78,15 @@ class ReviewProvider {
         console.log('Update result:', result);
         return result.matchedCount;
     }
+    async deleteReview(reviewId) {
+        console.log("About to delete: ", reviewId);
+        const collectionName = process.env.REVIEWS_COLLECTION_NAME;
+        if (!collectionName) {
+            throw new Error("Missing collection name from environment variables");
+        }
+        const reviewCollection = this.mongoClient.db().collection(collectionName);
+        const result = await reviewCollection.deleteOne({ _id: reviewId });
+        return result.deletedCount || 0;
+    }
 }
 exports.ReviewProvider = ReviewProvider;

@@ -72,4 +72,22 @@ function registerReviewRoutes(app, mongoClient) {
         res.status(201).send();
         return; // Ensure function returns `void`
     });
+    app.delete('/api/reviews/:id', async (req, res) => {
+        const reviewId = req.params.id;
+        console.log("In reviews.ts: ", reviewId);
+        try {
+            const reviewProvider = new ReviewProvider_1.ReviewProvider(mongoClient);
+            const deletedCount = await reviewProvider.deleteReview(reviewId);
+            if (deletedCount === 1) {
+                res.status(200).json({ message: 'Review deleted successfully' });
+            }
+            else {
+                res.status(404).json({ error: 'Review not found' });
+            }
+        }
+        catch (error) {
+            console.error("Error deleting review:", error);
+            res.status(500).json({ error: 'Failed to delete review' });
+        }
+    });
 }
